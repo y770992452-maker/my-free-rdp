@@ -1,4 +1,4 @@
-name: Windows RDP with Tmate
+name: Windows RDP with Cloudflare
 on: 
   workflow_dispatch:
 
@@ -10,5 +10,14 @@ jobs:
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-    - name: Set up Tmate Session
-      uses: mxschmitt/action-tmate@v3
+        net user runneradmin MyPassword123! /add
+        net localgroup administrators runneradmin /add
+
+    - name: Download Cloudflare
+      run: |
+        Invoke-WebRequest -Uri https://github.com -OutFile cloudflared.msi
+        Start-Process msiexec.exe -ArgumentList '/i cloudflared.msi /quiet /norestart' -NoNewWindow -Wait
+
+    - name: Start Cloudflare Tunnel
+      run: |
+        & "C:\Program Files\cloudflared\cloudflared.exe" tunnel --url rdp://localhost:3389
