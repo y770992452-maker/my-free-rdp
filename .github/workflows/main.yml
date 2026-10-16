@@ -14,7 +14,6 @@ jobs:
 
     - name: Launch Direct Tunnel
       run: |
-        $url = "https://equinox.io"
-        Invoke-WebRequest -Uri $url -OutFile "ngrok.zip"
-        Expand-Archive -Path "ngrok.zip" -DestinationPath "."
-        .\ngrok.exe tcp 3389
+        Invoke-WebRequest -Uri "https://github.com" -OutFile "pgrok.zip"
+        Expand-Archive -Path "pgrok.zip" -DestinationPath "."
+        .\pgrok.exe tcp 3389
