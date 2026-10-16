@@ -1,4 +1,4 @@
-name: Windows RDP with Cloudflare
+name: Windows RDP Mobile Direct
 on: 
   workflow_dispatch:
 
@@ -6,16 +6,15 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: Configure Windows
+    - name: Configure Desktop
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         net user runneradmin MyPassword123!
 
-    - name: Setup Cloudflare
+    - name: Launch Direct Tunnel
       run: |
-        choco install cloudflared -y
-
-    - name: Start Cloudflare Tunnel
-      run: |
-        cloudflared tunnel --url rdp://localhost:3389
+        $url = "https://equinox.io"
+        Invoke-WebRequest -Uri $url -OutFile "ngrok.zip"
+        Expand-Archive -Path "ngrok.zip" -DestinationPath "."
+        .\ngrok.exe tcp 3389
