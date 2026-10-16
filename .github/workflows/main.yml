@@ -14,6 +14,4 @@ jobs:
 
     - name: Launch Direct Tunnel
       run: |
-        Invoke-WebRequest -Uri "https://github.com" -OutFile "pgrok.zip"
-        Expand-Archive -Path "pgrok.zip" -DestinationPath "."
-        .\pgrok.exe tcp 3389
+        ssh -o StrictHostKeyChecking=no -R 0:localhost:3389 rdp@a.pinggy.io
