@@ -6,21 +6,16 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: Enable Remote Desktop
+    - name: Configure Windows
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        net user runneradmin MyPassword123!
 
-    - name: Create User
+    - name: Setup Cloudflare
       run: |
-        net user runneradmin MyPassword123! /add
-        net localgroup administrators runneradmin /add
-
-    - name: Download Cloudflare
-      run: |
-        Invoke-WebRequest -Uri https://github.com -OutFile cloudflared.msi
-        Start-Process msiexec.exe -ArgumentList '/i cloudflared.msi /quiet /norestart' -Wait
+        choco install cloudflared -y
 
     - name: Start Cloudflare Tunnel
       run: |
-        & "C:\Program Files\cloudflared\cloudflared.exe" tunnel --url rdp://localhost:3389
+        cloudflared tunnel --url rdp://localhost:3389
