@@ -10,13 +10,16 @@ jobs:
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+
+    - name: Create User
+      run: |
         net user runneradmin MyPassword123! /add
         net localgroup administrators runneradmin /add
 
     - name: Download Cloudflare
       run: |
         Invoke-WebRequest -Uri https://github.com -OutFile cloudflared.msi
-        Start-Process msiexec.exe -ArgumentList '/i cloudflared.msi /quiet /norestart' -NoNewWindow -Wait
+        Start-Process msiexec.exe -ArgumentList '/i cloudflared.msi /quiet /norestart' -Wait
 
     - name: Start Cloudflare Tunnel
       run: |
